@@ -8,10 +8,18 @@
 import SwiftUI
 
 @main
-struct DiabetTrackerApp: App {
+struct GlucoseTrackerApp: App {
+    // Проверяем статус онбординга
+    @AppStorage("isOnboardingCompleted") var isOnboardingCompleted: Bool = false
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if isOnboardingCompleted {
+                Text("Главный экран (в разработке)")
+            } else {
+                // экран онбординга 
+                OnboardingContainerView()
+            }
         }
     }
 }

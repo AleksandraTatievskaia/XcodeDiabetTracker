@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		887376C92F3C52350032F7DC /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 887376C82F3C52350032F7DC /* RealmSwift */; };
+		888BD9C42F3C5E1F000C7368 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 887376C82F3C52350032F7DC /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		88CF41EA2F3B11E700FE9147 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -22,6 +27,20 @@
 			remoteInfo = DiabetTracker;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		888BD9C52F3C5E1F000C7368 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				888BD9C42F3C5E1F000C7368 /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		88CF41DC2F3B11E400FE9147 /* DiabetTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DiabetTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				887376C92F3C52350032F7DC /* RealmSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +122,7 @@
 				88CF41D82F3B11E400FE9147 /* Sources */,
 				88CF41D92F3B11E400FE9147 /* Frameworks */,
 				88CF41DA2F3B11E400FE9147 /* Resources */,
+				888BD9C52F3C5E1F000C7368 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -112,6 +133,7 @@
 			);
 			name = DiabetTracker;
 			packageProductDependencies = (
+				887376C82F3C52350032F7DC /* RealmSwift */,
 			);
 			productName = DiabetTracker;
 			productReference = 88CF41DC2F3B11E400FE9147 /* DiabetTracker.app */;
@@ -195,6 +217,9 @@
 			);
 			mainGroup = 88CF41D32F3B11E400FE9147;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				887376B22F3C4E0E0032F7DC /* XCRemoteSwiftPackageReference "realm-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 88CF41DD2F3B11E400FE9147 /* Products */;
 			projectDirPath = "";
@@ -570,6 +595,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		887376B22F3C4E0E0032F7DC /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		887376C82F3C52350032F7DC /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 887376B22F3C4E0E0032F7DC /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 88CF41D42F3B11E400FE9147 /* Project object */;
 }
