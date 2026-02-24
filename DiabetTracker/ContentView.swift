@@ -8,17 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    // проверяем прошел ли пользователь onboarding
+    @AppStorage("isOnboaringCompleted") var isOnboardingCompleted: Bool = false
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, !")
+        Group {
+            if isOnboardingCompleted {
+                // Если регистрация пройдена — показываем главный экран
+                HomeView()
+            } else {
+                // Если нет — показываем твой красивый онбординг
+                OnboardingContainerView()
+            }
         }
-        .padding()
+        .animation(.easeInOut, value: isOnboardingCompleted) // Плавный переход
     }
 }
 
-#Preview {
-    ContentView()
-}

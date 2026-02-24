@@ -12,7 +12,7 @@ struct DisclaimerView: View {
     @ObservedObject var viewModel: OnboardingViewModel
     
     var body: some View {
-        VStack(spacing: 25) {
+        VStack(spacing: 40) {
             // Заголовок
             Text("Важное уведомление")
                 .font(.title2)
@@ -28,17 +28,15 @@ struct DisclaimerView: View {
             
             // Текст дисклеймера
             ScrollView {
-                Text("Данное приложение предназначено исключительно для самоконтроля уровня глюкозы. \n\nПриложение не является медицинским изделием и не заменяет профессиональную медицинскую консультацию, диагностику или лечение. \n\nВсегда консультируйтесь со своим лечащим врачом перед принятием любых медицинских решений.")
+                Text("Данное приложение предназначено исключительно для самоконтроля уровня глюкозы. \nПриложение не является медицинским изделием и не заменяет профессиональную медицинскую консультацию, диагностику или лечение. \nВсегда консультируйтесь со своим лечащим врачом перед принятием любых медицинских решений.")
                     .font(.body)
                     .multilineTextAlignment(.leading)
                     .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(15)
             }
             
             // Чекбокс (Toggle)
             Toggle(isOn: $viewModel.isAgreed) {
-                Text("Я согласен с условиями использования и понимаю риски")
+                Text("Я согласен с условиями использования и понимаю возможные риски")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -58,7 +56,7 @@ struct DisclaimerView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(viewModel.isAgreed ? Color.blue : Color.gray) // Меняем цвет если не нажато
+                    .background(Color("MainPurple")) 
                     .cornerRadius(16)
             }
             .disabled(!viewModel.isAgreed) // Блокируем кнопку
@@ -69,14 +67,14 @@ struct DisclaimerView: View {
     }
 }
 
-// Кастомный стиль для чекбокса
+// стиль для чекбокса
 struct CheckboxToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         HStack {
             Image(systemName: configuration.isOn ? "checkmark.square.fill" : "square")
                 .resizable()
                 .frame(width: 24, height: 24)
-                .foregroundColor(configuration.isOn ? .blue : .gray)
+                .foregroundColor(Color("MainPurple"))
                 .onTapGesture {
                     configuration.isOn.toggle()
                 }
@@ -84,3 +82,11 @@ struct CheckboxToggleStyle: ToggleStyle {
         }
     }
 }
+
+// Блок превью
+struct DisclaimerView_Previews: PreviewProvider {
+    static var previews: some View {
+        DisclaimerView(viewModel: OnboardingViewModel())
+    }
+}
+
