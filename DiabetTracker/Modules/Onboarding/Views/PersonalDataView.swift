@@ -40,7 +40,7 @@ struct ProfileRow<Content: View>: View {
                 
                 Spacer()
                 
-                // Элемент ввода (TextField, Picker или Text)
+                // Элемент ввода 
                 content
             }
             .padding(.vertical, 12)
@@ -83,7 +83,7 @@ struct PersonalDataView: View {
                             .foregroundColor(.gray)
                     }
                     
-                    // Возраст (с иконкой торта, как в макете)
+                    // Возраст
                     ProfileRow(icon: "birthday.cake", iconColor: .cyan, title: "Ваш возраст") {
                         HStack(spacing: 5) {
                             TextField("0", text: $viewModel.age)

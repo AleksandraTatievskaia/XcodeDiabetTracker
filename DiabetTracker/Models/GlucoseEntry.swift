@@ -6,6 +6,7 @@
 //
 import Foundation
 import RealmSwift
+
 // модель для замеров глюкозы
 class GlucoseEntry: Object, ObjectKeyIdentifiable {
     @Persisted(primaryKey: true) var id: ObjectId

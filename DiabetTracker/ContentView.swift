@@ -9,18 +9,20 @@ import SwiftUI
 
 struct ContentView: View {
     // проверяем прошел ли пользователь onboarding
-    @AppStorage("isOnboaringCompleted") var isOnboardingCompleted: Bool = false
+    // если значение true, то экран переключается сразу
+    @AppStorage("isOnboardingCompleted") var isOnboardingCompleted: Bool = false
+    
     var body: some View {
-        Group {
+        ZStack {
             if isOnboardingCompleted {
-                // Если регистрация пройдена — показываем главный экран
-                HomeView()
+                // Если регистрация пройдена, тогда показываем главный экран
+                MainView()
             } else {
-                // Если нет — показываем твой красивый онбординг
+                // Если нет онбординг
                 OnboardingContainerView()
             }
         }
-        .animation(.easeInOut, value: isOnboardingCompleted) // Плавный переход
+        .animation(.easeInOut, value: isOnboardingCompleted) // плавный переход
     }
 }
 

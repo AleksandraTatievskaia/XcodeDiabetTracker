@@ -13,28 +13,24 @@ struct DisclaimerView: View {
     
     var body: some View {
         VStack(spacing: 40) {
-            // Заголовок
-            Text("Важное уведомление")
-                .font(.title2)
-                .bold()
-                .padding(.top, 40)
-            
+
             // Иконка предупреждения
             Image(systemName: "exclamationmark.triangle.fill")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 80, height: 80)
                 .foregroundColor(.orange)
+                .padding(.top, 40)
             
             // Текст дисклеймера
             ScrollView {
                 Text("Данное приложение предназначено исключительно для самоконтроля уровня глюкозы. \nПриложение не является медицинским изделием и не заменяет профессиональную медицинскую консультацию, диагностику или лечение. \nВсегда консультируйтесь со своим лечащим врачом перед принятием любых медицинских решений.")
                     .font(.body)
-                    .multilineTextAlignment(.leading)
+                    .multilineTextAlignment(.center)
                     .padding()
             }
             
-            // Чекбокс (Toggle)
+            // Чекбокс 
             Toggle(isOn: $viewModel.isAgreed) {
                 Text("Я согласен с условиями использования и понимаю возможные риски")
                     .font(.subheadline)

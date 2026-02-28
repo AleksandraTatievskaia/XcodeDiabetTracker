@@ -16,5 +16,5 @@ class UserProfile: Object, ObjectKeyIdentifiable {
     @Persisted var glucoseUnit: String = "mmol/L" // Единицы измерения
     @Persisted var dailyGoal: Int = 4 // Количество замеров в день
     
-    @Persisted var isOnboardingCompleted: Bool = false // Проверка приветствия
+    @Persisted var isOnboardingCompleted: Bool = false // Проверка прохождения приветствия
 }
