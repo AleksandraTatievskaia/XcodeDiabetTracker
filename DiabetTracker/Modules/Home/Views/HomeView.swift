@@ -10,6 +10,7 @@ import Charts
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    @Binding var isShowingAddSheet: Bool
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -86,15 +87,15 @@ struct HomeView: View {
                     .padding(.horizontal)
                 
                 Chart {
-                    ForEach(viewModel.entries) { entry in
-                        LineMark(
-                            x: .value("Время", entry.date),
-                            y: .value("Сахар", entry.value)
+                    ForEach(viewModel.entries) { entry in // берем данные значений
+                        LineMark( // отрисовка линии
+                            x: .value("Время", entry.date), // точки на шкале времени
+                            y: .value("Сахар", entry.value) // точка значения глюкозы
                         )
                         .interpolationMethod(.catmullRom)
                         .foregroundStyle(Color(red: 0.35, green: 0.34, blue: 0.74))
                         
-                        AreaMark(
+                        AreaMark( // закраска пространства градиентом под линией
                             x: .value("Время", entry.date),
                             y: .value("Сахар", entry.value)
                         )
@@ -113,10 +114,10 @@ struct HomeView: View {
             
             // 4. Напоминания о замерах
             HStack {
-                Text("За сегодня сделано 0/\(viewModel.dailyGoal) замеров")
+                Text("За сегодня сделано \(viewModel.todayCount)/\(viewModel.dailyGoal) замеров")
                     .font(.system(size: 15, weight: .medium))
                 Spacer()
-                Button(action: { /* Вызов напоминаний окна */ }) {
+                Button(action: { isShowingAddSheet = true }) {
                     Image(systemName: "plus")
                         .font(.title3.bold())
                         .foregroundColor(.black)
@@ -136,13 +137,16 @@ struct HomeView: View {
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarHidden(true)
+        .onAppear {
+                viewModel.fetchData()
+            }
     }
 }
 // Блок превью
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        // .constant(false) имитирует привязку для превью
+        HomeView(isShowingAddSheet: .constant(false))
     }
 }
-
 

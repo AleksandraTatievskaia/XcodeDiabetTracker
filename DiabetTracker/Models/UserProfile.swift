@@ -13,7 +13,7 @@ class UserProfile: Object, ObjectKeyIdentifiable {
     @Persisted var name: String = "" // Имя
     @Persisted var age: Int = 0 // Возраст
     @Persisted var gender: String = "Мужчина" // Пол
-    @Persisted var glucoseUnit: String = "mmol/L" // Единицы измерения
+    @Persisted var glucoseUnit: String = "ммоль/л" // Единицы измерения
     @Persisted var dailyGoal: Int = 4 // Количество замеров в день
     
     @Persisted var isOnboardingCompleted: Bool = false // Проверка прохождения приветствия

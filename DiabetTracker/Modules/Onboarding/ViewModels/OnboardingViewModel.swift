@@ -14,7 +14,7 @@ class OnboardingViewModel: ObservableObject {
     @Published var name: String = ""
     @Published var age: String = ""
     @Published var selectedGender: String = "Мужчина"
-    @Published var selectedUnit: String = "mmol/L"
+    @Published var selectedUnit: String = "ммоль/л"
     @Published var dailyGoal: Int = 4
     
     // Состояние навигации

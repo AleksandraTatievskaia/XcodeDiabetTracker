@@ -110,8 +110,8 @@ struct PersonalDataView: View {
                     // Единицы измерения
                     ProfileRow(icon: "doc.plaintext.fill", iconColor: .blue, title: "Единицы измерения") {
                         Menu {
-                            Button("mmol/L") { viewModel.selectedUnit = "ммоль/л" }
-                            Button("mg/dL") { viewModel.selectedUnit = "мг/дл" }
+                            Button("ммоль/л") { viewModel.selectedUnit = "ммоль/л" }
+                            Button("мг/дл") { viewModel.selectedUnit = "мг/дл" }
                         } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: "chevron.up.chevron.down")
