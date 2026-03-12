@@ -111,7 +111,7 @@ struct AddEntryView: View {
             }
             .background(Color.white.ignoresSafeArea())
 
-            // Таббар — вся логика переключения теперь внутри LiquidTabBar.handleTap()
+            // Таббар
             LiquidTabBar(
                 selectedTab: $selectedTab,
                 isShowingAddSheet: $isShowingAddSheet

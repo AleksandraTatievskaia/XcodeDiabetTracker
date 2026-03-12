@@ -6,11 +6,10 @@
 //
 
 import SwiftUI
-import Charts
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
-    @Binding var isShowingAddSheet: Bool
+    @Binding var isShowingAddSheet: Bool // Связь для открытия экрана
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -70,7 +69,8 @@ struct HomeView: View {
                     .font(.subheadline)
                     .foregroundColor(viewModel.statusColor)
                     .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.8) // Чтобы текст не вылезал
+//                    .minimumScaleFactor(0.8) // Чтобы текст не вылезал
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, 2)
             }
             .padding(22)
@@ -81,35 +81,9 @@ struct HomeView: View {
             Spacer(minLength: 15)
             
             // 3. ГРАФИК
-            VStack(alignment: .leading, spacing: 10) {
-                Text("График за день")
-                    .font(.headline)
-                    .padding(.horizontal)
-                
-                Chart {
-                    ForEach(viewModel.entries) { entry in // берем данные значений
-                        LineMark( // отрисовка линии
-                            x: .value("Время", entry.date), // точки на шкале времени
-                            y: .value("Сахар", entry.value) // точка значения глюкозы
-                        )
-                        .interpolationMethod(.catmullRom)
-                        .foregroundStyle(Color(red: 0.35, green: 0.34, blue: 0.74))
-                        
-                        AreaMark( // закраска пространства градиентом под линией
-                            x: .value("Время", entry.date),
-                            y: .value("Сахар", entry.value)
-                        )
-                        .interpolationMethod(.catmullRom)
-                        .foregroundStyle(LinearGradient(colors: [Color(red: 0.35, green: 0.34, blue: 0.74).opacity(0.2), .clear], startPoint: .top, endPoint: .bottom))
-                    }
-                }
-                .frame(maxHeight: 160) // Адаптивная высота графика
-                .padding(15)
-                .background(Color.cyan.opacity(0.06))
-                .cornerRadius(25)
+            GlucoseChartView(entries: viewModel.entries, glucoseUnit: viewModel.glucoseUnit)
                 .padding(.horizontal)
-            }
-            
+
             Spacer(minLength: 15)
             
             // 4. Напоминания о замерах
@@ -136,10 +110,13 @@ struct HomeView: View {
             Spacer(minLength: 100)
         }
         .background(Color.white.ignoresSafeArea())
-        .navigationBarHidden(true)
-        .onAppear {
+//        .navigationBarHidden(true)
+        .onAppear { viewModel.fetchData() }
+        .onChange(of: isShowingAddSheet) { oldValue, newValue in
+            if newValue == false {
                 viewModel.fetchData()
             }
+        }
     }
 }
 // Блок превью

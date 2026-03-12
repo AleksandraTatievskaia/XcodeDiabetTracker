@@ -19,7 +19,7 @@ class HomeViewModel: ObservableObject {
     @Published var statusMessage: String = "Нет данных для анализа"
     @Published var statusColor: Color = .black
     @Published var entries: [GlucoseEntry] = []
-    @Published var todayCount: Int = 0
+    @Published var todayCount: Int = 0 // счетчик замеров за сегодня
     
     private var realm: Realm?
     
@@ -29,63 +29,44 @@ class HomeViewModel: ObservableObject {
     }
     
     func fetchData() {
-            guard let realm = realm else { return }
-            
-            // 1. Грузим профиль (чтобы получить единицы измерения)
+            guard let realm = RealmService.shared.localRealm else { return }
+            realm.refresh() // Принудительно обновляем состояние БД
+
             if let profile = realm.objects(UserProfile.self).first {
                 self.userName = profile.name
                 self.glucoseUnit = profile.glucoseUnit
                 self.dailyGoal = profile.dailyGoal
             }
-            
-            let now = Date()
-            let calendar = Calendar.current
-            let past24Hours = calendar.date(byAdding: .hour, value: -24, to: now)!
-            let startOfToday = calendar.startOfDay(for: now)
 
-            // 2. Для графика берем замеры только за последние 24 часа
-            let recentEntries = realm.objects(GlucoseEntry.self)
-                .filter("date >= %@", past24Hours)
-                .sorted(byKeyPath: "date", ascending: true)
-            self.entries = Array(recentEntries)
-            
-            // 3. для анализа берем все замеры за сегодня
-            let todayEntries = realm.objects(GlucoseEntry.self)
-                .filter("date >= %@", startOfToday)
-                .sorted(byKeyPath: "date", ascending: true)
-            self.entries = Array(todayEntries)
-            self.todayCount = todayEntries.count // Учет количества записей в БД
-
-            if let last = todayEntries.last {
+            // Самый последний замер 
+            let allEntries = realm.objects(GlucoseEntry.self).sorted(byKeyPath: "date", ascending: true)
+            if let last = allEntries.last {
                 self.lastValue = last.value
                 let formatter = DateFormatter()
                 formatter.dateFormat = "dd.MM.yyyy\nHH:mm"
                 self.lastEntryDate = formatter.string(from: last.date)
-                
-                // Считаем статус на основе сегодняшних замеров
-                calculateStatus(current: last.value, todayHistory: Array(todayEntries))
+                calculateStatus(current: last.value, history: Array(allEntries.suffix(7)))
             }
+
+            // Замеры только за сегодня для графика и счетчика
+            let startOfToday = Calendar.current.startOfDay(for: Date())
+            let todayEntries = allEntries.filter("date >= %@", startOfToday)
+            self.entries = Array(todayEntries)
+            self.todayCount = todayEntries.count
         }
-    
-    private func calculateStatus(current: Double, todayHistory: [GlucoseEntry]) {
-            // Если замер сегодня только один, сравнивать не с чем
-            guard todayHistory.count > 1 else {
-                statusMessage = "Первый замер за сегодня. Продолжайте наблюдение."
-                statusColor = .black
-                return
-            }
-            
-            let values = todayHistory.map { $0.value }
+        
+        private func calculateStatus(current: Double, history: [GlucoseEntry]) {
+            guard history.count >= 1 else { return }
+            let values = history.map { $0.value }
             let average = values.reduce(0, +) / Double(values.count)
-            
             let percentageDiff = (abs(current - average) / average) * 100
             
             if percentageDiff > 80 {
-                statusMessage = "Замечено значительное отклонение от ваших показателей за сегодня. Обратите внимание на самочувствие."
+                statusMessage = "Замечено значительное отклонение от ваших обычных показателей. Обратите внимание на самочувствие."
                 statusColor = .orange
             } else {
-                statusMessage = "Отличная новость! Ваши показатели сегодня стабильны."
+                statusMessage = "Отличная новость! Ваши показатели стабильны."
                 statusColor = .black
             }
         }
-}
+    }

@@ -19,7 +19,7 @@ struct MainView: View {
                 if selectedTab == 0 {
                     HomeView(isShowingAddSheet: $isShowingAddSheet)
                 } else if selectedTab == 2 {
-                    Text("Экран статистики")
+                    StatisticsView()
                 } else if selectedTab == 4 {
                     Text("Настройки")
                 } else {

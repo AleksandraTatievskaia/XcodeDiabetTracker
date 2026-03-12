@@ -14,7 +14,7 @@ class AddEntryViewModel: ObservableObject {
         }
     @Published var date: Date = Date()
     @Published var period: String = "После обеда"
-    @Published var unit: String = "ммоль/л" // Подгрузится из базы
+    @Published var unit: String = "ммоль/л" // Подгрузится из базы значение, которые выбрал пользователь
     @Published var note: String = ""
     @Published var warningMessage: String = "Введите значение"
     
@@ -46,11 +46,11 @@ class AddEntryViewModel: ObservableObject {
             let currentHigh = (unit == "ммоль/л") ? highLimit : (highLimit * 18.02)
             
             if val < currentLow {
-                let thresholdStr = (unit == "ммоль/л") ? "3,9 ммоль/л" : "70 мг/дл"
+                let thresholdStr = (unit == "ммоль/л") ? "3,9 ммоль/л" : "70,278 мг/дл"
                 warningMessage = "Уровень глюкозы ниже \(thresholdStr). Это пограничное значение, при котором важно обратить внимание на самочувствие. Рекомендуем обратиться с консультацией к врачу."
             } else if val > currentHigh {
-                let thresholdStr = (unit == "ммоль/л") ? "11,1 ммоль/л" : "200 мг/дл"
-                warningMessage = "Уровень глюкозы выше \(thresholdStr). Это значение может указывать на риск серьезного осложнения (кетоацидоза). Обратите внимание на самочувствие. Рекомендуем обратиться с консультацией к врачу."
+                let thresholdStr = (unit == "ммоль/л") ? "11,1 ммоль/л" : "200,022 мг/дл"
+                warningMessage = "Уровень глюкозы выше \(thresholdStr). Это значение может указывать на риск осложнений. Обратите внимание на самочувствие. Рекомендуем обратиться с консультацией к врачу."
             } else {
                 warningMessage = "Показатель в пределах нормы."
             }
