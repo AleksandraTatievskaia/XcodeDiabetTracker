@@ -12,7 +12,7 @@ struct GlucoseChartView: View {
     let glucoseUnit: String
     var showDate: Bool = false  // false = HH:mm, true = dd.MM
 
-    // Выбранный столбик для тултипа
+    // Выбранный столбик
     @State private var selectedIndex: Int? = nil
 
     // MARK: - Пороговые значения (единые с AddEntryViewModel)
@@ -28,7 +28,7 @@ struct GlucoseChartView: View {
     }
 
     // MARK: - Шкала Y
-
+    // Фиксированный максимум — столбики которые превышают его просто обрезаются .clipped()
     private var yMax: Double {
         glucoseUnit == "мг/дл" ? 250 : 15
     }
@@ -83,6 +83,10 @@ struct GlucoseChartView: View {
 
     // MARK: - Пустое состояние
 
+    // Текст передаётся снаружи
+    // HomeView передаёт "за сегодня", StatisticsView — "за выбранный период"
+    var emptyStateText: String = "Нет замеров за выбранный период"
+
     private var emptyState: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 16)
@@ -92,7 +96,7 @@ struct GlucoseChartView: View {
                 Image(systemName: "chart.bar.xaxis")
                     .font(.system(size: 32))
                     .foregroundColor(Color(red: 0.55, green: 0.53, blue: 0.95).opacity(0.4))
-                Text("Нет замеров за выбранный период")
+                Text(emptyStateText)
                     .font(.system(size: 14))
                     .foregroundColor(.gray)
             }
@@ -101,6 +105,17 @@ struct GlucoseChartView: View {
     }
 
     // MARK: - График
+
+    // чтобы не обрезался .clipped())
+    private struct TooltipInfo {
+        let value: Double
+        let date: Date
+        let xCenter: CGFloat
+        let yTop: CGFloat
+        let leftPadding: CGFloat
+        let plotW: CGFloat
+        let topPadding: CGFloat
+    }
 
     private var chart: some View {
         GeometryReader { geo in
@@ -115,10 +130,30 @@ struct GlucoseChartView: View {
             let labelStep = max(1, entries.count / 6)
             let barCount  = entries.count
             let totalGap  = plotW * 0.35
-            let barWidth  = max(6, (plotW - totalGap) / CGFloat(barCount))
+            // Ограничиваем максимальную ширину столбика — при 1-2 замерах он не будет огромным
+            let barWidth  = min(32, max(6, (plotW - totalGap) / CGFloat(barCount)))
             let spacing: CGFloat = barCount > 1
                 ? (plotW - barWidth * CGFloat(barCount)) / CGFloat(barCount - 1)
                 : 0
+
+            // Считаем данные тултипа для overlay
+            let tooltipInfo: TooltipInfo? = {
+                guard let idx = selectedIndex, idx < entries.count else { return nil }
+                let entry = entries[idx]
+                let xCenter = leftPadding + barWidth / 2 + CGFloat(idx) * (barWidth + spacing)
+                let barH = max(4, plotH * CGFloat(entry.value / yMax))
+                let yBottom = topPadding + plotH
+                let yTop = yBottom - barH
+                return TooltipInfo(
+                    value: entry.value,
+                    date: entry.date,
+                    xCenter: xCenter,
+                    yTop: yTop,
+                    leftPadding: leftPadding,
+                    plotW: plotW,
+                    topPadding: topPadding
+                )
+            }()
 
             ZStack(alignment: .topLeading) {
 
@@ -205,14 +240,13 @@ struct GlucoseChartView: View {
                         .frame(width: barWidth, height: barH)
                         .scaleEffect(isSelected ? 1.05 : 1.0, anchor: .bottom)
                         .position(x: xCenter, y: yTop + barH / 2)
-                        // Нажатие — выбираем/снимаем
                         .onTapGesture {
                             withAnimation(.easeInOut(duration: 0.15)) {
                                 selectedIndex = (selectedIndex == index) ? nil : index
                             }
                         }
 
-                    // Значение над столбиком (если не тесно)
+                    // Значение над столбиком
                     if barWidth >= 20 && !isSelected {
                         Text(formatValue(entry.value))
                             .font(.system(size: 10, weight: .bold))
@@ -228,38 +262,6 @@ struct GlucoseChartView: View {
                             .position(x: xCenter,
                                       y: topPadding + plotH + bottomPadding / 2)
                     }
-
-                    // Тултип над выбранным столбиком
-                    if isSelected {
-                        let tooltipW: CGFloat = 130
-                        let tooltipH: CGFloat = 44
-                        // Не выходим за левый и правый края
-                        let clampedX = min(
-                            max(xCenter, leftPadding + tooltipW / 2),
-                            leftPadding + plotW - tooltipW / 2
-                        )
-
-                        VStack(spacing: 2) {
-                            Text(tooltipDate(from: entry.date))
-                                .font(.system(size: 10, weight: .medium))
-                                .foregroundColor(.white.opacity(0.85))
-                            Text("\(formatValue(entry.value)) \(glucoseUnit)")
-                                .font(.system(size: 13, weight: .bold))
-                                .foregroundColor(.white)
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .frame(width: tooltipW, height: tooltipH)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(barColor(for: entry.value))
-                                .shadow(color: barColor(for: entry.value).opacity(0.35),
-                                        radius: 6, x: 0, y: 3)
-                        )
-                        .position(x: clampedX, y: max(yTop - tooltipH / 2 - 12, topPadding + tooltipH / 2))
-                        .transition(.opacity.combined(with: .scale(scale: 0.85)))
-                        .zIndex(10)
-                    }
                 }
 
                 // Tap на пустое место — снимаем выделение
@@ -267,6 +269,45 @@ struct GlucoseChartView: View {
                     .contentShape(Rectangle())
                     .onTapGesture { withAnimation { selectedIndex = nil } }
                     .zIndex(-1)
+            }
+           
+            .clipped()
+          
+            .overlay(alignment: .topLeading) {
+                if let t = tooltipInfo {
+                    let tooltipW: CGFloat = 130
+                    let tooltipH: CGFloat = 44
+                    let clampedX = min(
+                        max(t.xCenter, t.leftPadding + tooltipW / 2),
+                        t.leftPadding + t.plotW - tooltipW / 2
+                    )
+                    let clampedY = max(
+                        t.yTop - tooltipH / 2 - 12,
+                        t.topPadding + tooltipH / 2
+                    )
+
+                    VStack(spacing: 2) {
+                        Text(tooltipDate(from: t.date))
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.85))
+                        Text("\(formatValue(t.value)) \(glucoseUnit)")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .frame(width: tooltipW, height: tooltipH)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(barColor(for: t.value))
+                            .shadow(color: barColor(for: t.value).opacity(0.35),
+                                    radius: 6, x: 0, y: 3)
+                    )
+                    .position(x: clampedX, y: clampedY)
+                    .transition(.opacity.combined(with: .scale(scale: 0.85)))
+                    .animation(.easeInOut(duration: 0.15), value: selectedIndex)
+                    .zIndex(10)
+                }
             }
         }
     }

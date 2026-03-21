@@ -41,7 +41,7 @@ struct HomeView: View {
             .padding(.horizontal)
             .padding(.top, 15)
             
-            Spacer(minLength: 15) // Динамический отступ
+            Spacer(minLength: 15)
             
             // 2. Карточка глюкозы
             VStack(spacing: 10) {
@@ -69,7 +69,6 @@ struct HomeView: View {
                     .font(.subheadline)
                     .foregroundColor(viewModel.statusColor)
                     .multilineTextAlignment(.center)
-//                    .minimumScaleFactor(0.8) // Чтобы текст не вылезал
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, 2)
             }
@@ -81,8 +80,15 @@ struct HomeView: View {
             Spacer(minLength: 15)
             
             // 3. ГРАФИК
-            GlucoseChartView(entries: viewModel.entries, glucoseUnit: viewModel.glucoseUnit)
-                .padding(.horizontal)
+            // Фиксированная высота — столбики не могут вырасти выше этой области
+            // Текст пустого состояния: "за сегодня" т.к. entries фильтруются по сегодняшнему дню
+            GlucoseChartView(
+                entries: viewModel.entries,
+                glucoseUnit: viewModel.glucoseUnit,
+                emptyStateText: "Нет замеров за сегодня"
+            )
+            .padding(.horizontal)
+            .frame(height: 200)
 
             Spacer(minLength: 15)
             
@@ -106,11 +112,9 @@ struct HomeView: View {
             .shadow(color: .black.opacity(0.03), radius: 5)
             .padding(.horizontal)
             
-            // Отступ под меню
             Spacer(minLength: 100)
         }
         .background(Color.white.ignoresSafeArea())
-//        .navigationBarHidden(true)
         .onAppear { viewModel.fetchData() }
         .onChange(of: isShowingAddSheet) { oldValue, newValue in
             if newValue == false {
@@ -119,11 +123,9 @@ struct HomeView: View {
         }
     }
 }
-// Блок превью
+
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        // .constant(false) имитирует привязку для превью
         HomeView(isShowingAddSheet: .constant(false))
     }
 }
-

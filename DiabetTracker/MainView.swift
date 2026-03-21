@@ -20,6 +20,8 @@ struct MainView: View {
                     HomeView(isShowingAddSheet: $isShowingAddSheet)
                 } else if selectedTab == 2 {
                     StatisticsView()
+                } else if selectedTab == 3 {
+                    EntriesView()
                 } else if selectedTab == 4 {
                     Text("Настройки")
                 } else {
@@ -59,7 +61,7 @@ struct LiquidTabBar: View {
     let icons = ["house.fill", "plus.circle.fill", "chart.bar.fill", "doc.text.fill", "gearshape.fill"]
 
     private func isActive(_ index: Int) -> Bool {
-        // Если sheet открыт — подсвечиваем "+" (index 1)
+        // Если страница открыта, то подсвечиваем "+" (index 1)
         if isShowingAddSheet { return index == 1 }
         return (activeTabOverride ?? selectedTab) == index
     }
@@ -107,10 +109,10 @@ struct LiquidTabBar: View {
                 isShowingAddSheet = true
             }
         } else {
-            // Любой другой таб — сначала закрыть sheet, потом переключить
+            // другой таб — сначала закрыть страницу, потом переключить
             if isShowingAddSheet {
                 isShowingAddSheet = false
-                // Небольшая задержка, чтобы sheet успел закрыться до смены таба
+                // задержка, чтобы страница успела закрыться до смены таба
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         selectedTab = index

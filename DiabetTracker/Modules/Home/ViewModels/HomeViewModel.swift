@@ -38,12 +38,12 @@ class HomeViewModel: ObservableObject {
                 self.dailyGoal = profile.dailyGoal
             }
 
-            // Самый последний замер 
+            // Самый последний замер
             let allEntries = realm.objects(GlucoseEntry.self).sorted(byKeyPath: "date", ascending: true)
             if let last = allEntries.last {
                 self.lastValue = last.value
                 let formatter = DateFormatter()
-                formatter.dateFormat = "dd.MM.yyyy\nHH:mm"
+                formatter.dateFormat = "dd.MM.yyyy, HH:mm"
                 self.lastEntryDate = formatter.string(from: last.date)
                 calculateStatus(current: last.value, history: Array(allEntries.suffix(7)))
             }
